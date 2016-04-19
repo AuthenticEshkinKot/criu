@@ -696,6 +696,18 @@ int main(int argc, char *argv[], char *envp[])
 			return cpuinfo_check();
 	}
 
+	if (!strcmp(argv[optind], "gc")) {
+		
+		ret = cr_garbage_collect();
+		
+		if (!ret)
+		{
+			printf("everything is OK\n");
+		}
+		
+		return ret != 0;
+	}
+
 	pr_msg("Error: unknown command: %s\n", argv[optind]);
 usage:
 	pr_msg("\n"
@@ -719,6 +731,7 @@ usage:
 "  dedup          remove duplicates in memory dump\n"
 "  cpuinfo dump   writes cpu information into image file\n"
 "  cpuinfo check  validates cpu information read from image file\n"
+"  gc             removes what was left in the system after dump\n"
 	);
 
 	if (usage_error) {
@@ -832,6 +845,8 @@ usage:
 "  --port PORT           port of page server\n"
 "  -d|--daemon           run in the background after creating socket\n"
 "\n"
+"Garbage collection options:\n"
+"  --show                show list without remove\n"
 "Other options:\n"
 "  -h|--help             show this text\n"
 "  -V|--version          show version\n"

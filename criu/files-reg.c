@@ -448,6 +448,24 @@ out:
 	return ret;
 }
 
+static int try_delete_one_remap(struct remap_info *ri)
+{
+	int ret = -1;
+	RemapFilePathEntry *rfe = ri->rfe;
+	struct reg_file_info *rfi = ri->rfi;
+
+	pr_info("MAX: Deleting remap %#x -> %#x\n", rfi->rfe->id, rfe->remap_id);
+
+	if (rfe->remap_type == REMAP_TYPE__LINKED) {
+		ret = open_remap_linked(rfi, rfe);
+		int mntns_root = mntns_get_root_by_mnt_id(rfi->remap->rmnt_id);
+		unlinkat(mntns_root, rfi->remap->rpath, rfi->remap->is_dir ? AT_REMOVEDIR : 0);
+		pr_info("MAX: deleted remap path - %s\n", rfi->remap->rpath);
+	}
+
+	return ret;
+}
+
 /* We separate the prepartion of PROCFS remaps because they allocate pstree
  * items, which need to be seen by the root task. We can't do all remaps here,
  * because the files haven't been loaded yet.
@@ -480,6 +498,20 @@ int prepare_remaps(void)
 
 	list_for_each_entry(ri, &remaps, list) {
 		ret = prepare_one_remap(ri);
+		if (ret)
+			break;
+	}
+
+	return ret;
+}
+
+int delete_remaps(void)
+{
+	struct remap_info *ri;
+	int ret = 0;
+
+	list_for_each_entry(ri, &remaps, list) {
+		ret = try_delete_one_remap(ri);
 		if (ret)
 			break;
 	}
