@@ -6,18 +6,6 @@
 #include "mount.h"
 #include "stats.h"
 
-#ifndef arch_export_restore_thread
-#define arch_export_restore_thread	__export_restore_thread
-#endif
-
-#ifndef arch_export_restore_task
-#define arch_export_restore_task	__export_restore_task
-#endif
-
-#ifndef arch_export_unmap
-#define arch_export_unmap		__export_unmap
-#endif
-
 static int max_prepare_namespace();
 
 int cr_garbage_collect(void)
