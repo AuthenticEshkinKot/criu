@@ -5,48 +5,22 @@
 #include "crtools.h"
 #include "mount.h"
 #include "stats.h"
+#include "pstree.h"
 
 static int max_prepare_namespace();
 
 int cr_garbage_collect(void)
 {
-	/*if (cr_plugin_init(CR_PLUGIN_STAGE__RESTORE))
-		return -1;*/
-
-	/*if (check_img_inventory() < 0)
-		return -1;*/
-
-	if (init_stats(RESTORE_STATS)) //мб нужны GC_STATS
+	if (check_img_inventory() < 0)
 		return -1;
-
-	/*if (kerndat_init_rst())
-		return -1;*/
-
-	timing_start(TIME_RESTORE);
-
-	/*if (cpu_init() < 0)
-		return -1;
-
-	if (vdso_init())
-		return -1;
-
-	if (opts.cpu_cap & (CPU_CAP_INS | CPU_CAP_CPU)) {
-		if (cpu_validate_cpuinfo())
-			return -1;
-	}*/
-
 
 	if (collect_remaps_and_regfiles())
 		return -1;
-	printf("collected remaps and regfiles\n");
 
-
-  if (max_prepare_namespace())
-    return -1;
-
-
-  if (delete_remaps())
+	if (max_prepare_namespace())
 		return -1;
+
+	delete_collected_remaps();
 
 	return 0;
 }
@@ -54,10 +28,10 @@ int cr_garbage_collect(void)
 static int max_prepare_namespace()
 {  
 	pr_info("MAX: going to prepare_namespace\n");
-	/*if (prepare_namespace(current, ca.clone_flags)) //нужно для unlink
-			return -1;*/
 
-	//корректна ли замена prepare_namespace на prepare_mnt_ns?
+	if (prepare_pstree(true))
+		return -1;
+
 	if (prepare_mnt_ns())
 		return -1;
 

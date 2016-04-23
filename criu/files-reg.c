@@ -448,22 +448,31 @@ out:
 	return ret;
 }
 
-static int try_delete_one_remap(struct remap_info *ri)
+static int delete_one_remap(struct remap_info *ri)
 {
-	int ret = -1;
 	RemapFilePathEntry *rfe = ri->rfe;
 	struct reg_file_info *rfi = ri->rfi;
 
-	pr_info("MAX: Deleting remap %#x -> %#x\n", rfi->rfe->id, rfe->remap_id);
-
 	if (rfe->remap_type == REMAP_TYPE__LINKED) {
-		ret = open_remap_linked(rfi, rfe);
+		if (open_remap_linked(rfi, rfe))
+		{
+			pr_err("MAX: open_remap_linked failed");
+			return -1;
+		}
+
 		int mntns_root = mntns_get_root_by_mnt_id(rfi->remap->rmnt_id);
-		unlinkat(mntns_root, rfi->remap->rpath, rfi->remap->is_dir ? AT_REMOVEDIR : 0);
-		pr_info("MAX: deleted remap path - %s\n", rfi->remap->rpath);
+		if (!unlinkat(mntns_root, rfi->remap->rpath, rfi->remap->is_dir ? AT_REMOVEDIR : 0))
+		{
+			pr_info("MAX: deleted remap path - %s\n", rfi->remap->rpath);
+		}
+		else
+		{
+			pr_err("MAX: unlinkat failed");
+			return -1;
+		}
 	}
 
-	return ret;
+	return 0;
 }
 
 /* We separate the prepartion of PROCFS remaps because they allocate pstree
@@ -505,18 +514,13 @@ int prepare_remaps(void)
 	return ret;
 }
 
-int delete_remaps(void)
+void delete_collected_remaps(void)
 {
 	struct remap_info *ri;
-	int ret = 0;
 
 	list_for_each_entry(ri, &remaps, list) {
-		ret = try_delete_one_remap(ri);
-		if (ret)
-			break;
+		delete_one_remap(ri);
 	}
-
-	return ret;
 }
 
 static void try_clean_ghost(struct remap_info *ri)

@@ -75,7 +75,7 @@ extern struct pstree_item *pstree_item_next(struct pstree_item *item);
 	for (pi = root_item; pi != NULL; pi = pstree_item_next(pi))
 
 extern bool restore_before_setsid(struct pstree_item *child);
-extern int prepare_pstree(void);
+extern int prepare_pstree(bool is_for_gc);
 
 extern int dump_pstree(struct pstree_item *root_item);
 

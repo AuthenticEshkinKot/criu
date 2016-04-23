@@ -403,7 +403,7 @@ static int read_pstree_ids(struct pstree_item *pi)
 	return 0;
 }
 
-static int read_pstree_image(void)
+static int read_pstree_image(bool is_for_gc)
 {
 	int ret = 0, i;
 	struct cr_img *img;
@@ -487,8 +487,11 @@ static int read_pstree_image(void)
 			max_pid = max((int)e->threads[i], max_pid);
 		}
 
-		task_entries->nr_threads += e->n_threads;
-		task_entries->nr_tasks++;
+		if (!is_for_gc)
+		{
+			task_entries->nr_threads += e->n_threads;
+			task_entries->nr_tasks++;
+		}
 
 		pstree_entry__free_unpacked(e, NULL);
 
@@ -778,11 +781,11 @@ static int prepare_pstree_kobj_ids(void)
 	return 0;
 }
 
-int prepare_pstree(void)
+int prepare_pstree(bool is_for_gc)
 {
 	int ret;
 
-	ret = read_pstree_image();
+	ret = read_pstree_image(is_for_gc);
 	if (!ret)
 		/*
 		 * Shell job may inherit sid/pgid from the current

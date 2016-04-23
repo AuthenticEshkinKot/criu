@@ -697,15 +697,7 @@ int main(int argc, char *argv[], char *envp[])
 	}
 
 	if (!strcmp(argv[optind], "gc")) {
-		
-		ret = cr_garbage_collect();
-		
-		if (!ret)
-		{
-			printf("everything is OK\n");
-		}
-		
-		return ret != 0;
+		return cr_garbage_collect();
 	}
 
 	pr_msg("Error: unknown command: %s\n", argv[optind]);
@@ -846,7 +838,7 @@ usage:
 "  -d|--daemon           run in the background after creating socket\n"
 "\n"
 "Garbage collection options:\n"
-"  --show                show list without remove\n"
+"  --show                show what will be deleted without actual deletion\n"
 "Other options:\n"
 "  -h|--help             show this text\n"
 "  -V|--version          show version\n"
