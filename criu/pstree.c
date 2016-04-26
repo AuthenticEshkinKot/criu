@@ -219,7 +219,7 @@ struct pstree_item *__alloc_pstree_item(bool rst)
 	return item;
 }
 
-struct pstree_item *alloc_pstree_helper(void)
+struct pstree_item *alloc_pstree_helper(bool is_for_gc)
 {
 	struct pstree_item *ret;
 
@@ -227,7 +227,8 @@ struct pstree_item *alloc_pstree_helper(void)
 	if (ret) {
 		ret->state = TASK_HELPER;
 		rsti(ret)->clone_flags = CLONE_FILES | CLONE_FS;
-		task_entries->nr_helpers++;
+		if (!is_for_gc)
+			task_entries->nr_helpers++;
 	}
 
 	return ret;
@@ -504,7 +505,7 @@ err:
 	return ret;
 }
 
-static int prepare_pstree_ids(void)
+static int prepare_pstree_ids(bool is_for_gc)
 {
 	struct pstree_item *item, *child, *helper, *tmp;
 	LIST_HEAD(helpers);
@@ -527,7 +528,7 @@ static int prepare_pstree_ids(void)
 		if (item->sid == root_item->sid || item->sid == item->pid.virt)
 			continue;
 
-		helper = alloc_pstree_helper();
+		helper = alloc_pstree_helper(is_for_gc);
 		if (helper == NULL)
 			return -1;
 		helper->sid = item->sid;
@@ -646,7 +647,7 @@ static int prepare_pstree_ids(void)
 		if (current_pgid == item->pgid)
 			continue;
 
-		helper = alloc_pstree_helper();
+		helper = alloc_pstree_helper(is_for_gc);
 		if (helper == NULL)
 			return -1;
 		helper->sid = item->sid;
@@ -803,7 +804,7 @@ int prepare_pstree(bool is_for_gc)
 		 * Session/Group leaders might be dead. Need to fix
 		 * pstree with properly injected helper tasks.
 		 */
-		ret = prepare_pstree_ids();
+		ret = prepare_pstree_ids(is_for_gc);
 
 	return ret;
 }
