@@ -10,10 +10,10 @@
 #include "sk-inet.h"
 #include "rst-malloc.h"
 
-static int max_prepare_namespace();
-static int max_prepare_sockets();
+static int gc_prepare_namespace();
+static int gc_prepare_sockets();
 
-int cr_garbage_collect(void)
+int cr_garbage_collect(bool show)
 {
 	if (check_img_inventory() < 0)
 		return -1;
@@ -21,20 +21,19 @@ int cr_garbage_collect(void)
 	if (collect_remaps_and_regfiles())
 		return -1;
 
-	if (max_prepare_namespace())
+	if (gc_prepare_namespace())
 		return -1;
 
-	if (max_prepare_sockets())
+	if (gc_prepare_sockets())
 		return -1;
 
-	network_unlock();
-
-	delete_collected_remaps();
+	gc_network(show);
+	gc_collected_remaps(show);
 
 	return 0;
 }
 
-static int max_prepare_namespace()
+static int gc_prepare_namespace()
 {  
 	pr_info("MAX: going to prepare_namespace\n");
 
@@ -47,7 +46,7 @@ static int max_prepare_namespace()
   return 0;
 }
 
-static int max_prepare_sockets()
+static int gc_prepare_sockets()
 {
 	if (collect_inet_sockets())
 		return -1;
