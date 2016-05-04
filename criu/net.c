@@ -1296,7 +1296,7 @@ void network_unlock(void)
 	}
 }
 
-void network_rules_deletion(bool show_only)
+void gc_network(bool show_only)
 {
 	cpt_gc_unlock_tcp_connections();
 	if (show_only)

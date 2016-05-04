@@ -27,7 +27,7 @@ int cr_garbage_collect(bool show)
 	if (gc_prepare_sockets())
 		return -1;
 
-	network_rules_deletion(show);
+	gc_network(show);
 
 	delete_collected_remaps();
 

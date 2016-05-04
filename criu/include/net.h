@@ -19,7 +19,7 @@ extern int collect_net_namespaces(bool for_dump);
 
 extern int network_lock(void);
 extern void network_unlock(void);
-extern void network_rules_deletion(bool show_only);
+extern void gc_network(bool show_only);
 
 extern struct ns_desc net_ns_desc;
 
