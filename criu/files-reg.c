@@ -456,20 +456,39 @@ static int delete_one_remap(struct remap_info *ri)
 	if (rfe->remap_type == REMAP_TYPE__LINKED) {
 		if (open_remap_linked(rfi, rfe))
 		{
-			pr_err("MAX: open_remap_linked failed");
+			pr_err("open_remap_linked failed");
 			return -1;
 		}
 
 		int mntns_root = mntns_get_root_by_mnt_id(rfi->remap->rmnt_id);
 		if (!unlinkat(mntns_root, rfi->remap->rpath, rfi->remap->is_dir ? AT_REMOVEDIR : 0))
 		{
-			pr_info("MAX: deleted remap path - %s\n", rfi->remap->rpath);
+			pr_info("deleted remap - %s\n", rfi->remap->rpath);
 		}
 		else
 		{
-			pr_err("MAX: unlinkat failed");
+			pr_err("unlinkat failed");
 			return -1;
 		}
+	}
+
+	return 0;
+}
+
+static int show_one_remap(struct remap_info *ri)
+{
+	RemapFilePathEntry *rfe = ri->rfe;
+	struct reg_file_info *rfi = ri->rfi;
+
+	if (rfe->remap_type == REMAP_TYPE__LINKED) {
+		if (open_remap_linked(rfi, rfe))
+		{
+			pr_err("open_remap_linked failed");
+			return -1;
+		}
+
+		pr_info("%s\n", rfi->remap->rpath);
+		printf("%s\n", rfi->remap->rpath);
 	}
 
 	return 0;
@@ -514,12 +533,23 @@ int prepare_remaps(void)
 	return ret;
 }
 
-void delete_collected_remaps(void)
+void gc_collected_remaps(bool show_only)
 {
 	struct remap_info *ri;
 
-	list_for_each_entry(ri, &remaps, list) {
-		delete_one_remap(ri);
+	if (show_only)
+	{
+		pr_info("Link remaps:\n");
+		printf("Link remaps:\n");
+		list_for_each_entry(ri, &remaps, list) {
+			show_one_remap(ri);
+		}
+	}
+	else
+	{
+		list_for_each_entry(ri, &remaps, list) {
+			delete_one_remap(ri);
+		}
 	}
 }
 

@@ -29,7 +29,7 @@ int cr_garbage_collect(bool show)
 
 	gc_network(show);
 
-	delete_collected_remaps();
+	gc_collected_remaps(show);
 
 	return 0;
 }
