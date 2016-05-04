@@ -13,7 +13,7 @@
 static int max_prepare_namespace();
 static int max_prepare_sockets();
 
-int cr_garbage_collect(void)
+int cr_garbage_collect(bool show)
 {
 	if (check_img_inventory() < 0)
 		return -1;
@@ -27,7 +27,14 @@ int cr_garbage_collect(void)
 	if (max_prepare_sockets())
 		return -1;
 
-	network_unlock();
+	if (show)
+	{
+		show_network_rules();
+	}
+	else
+	{
+		network_unlock();
+	}
 
 	delete_collected_remaps();
 

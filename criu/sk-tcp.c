@@ -725,6 +725,16 @@ void rst_unlock_tcp_connections(void)
 		nf_unlock_connection_info(ii);
 }
 
+void list_unlock_tcp_connections(void)
+{
+	struct inet_sk_info *ii;
+
+	pr_info("MAX: Listing network rules\n");
+
+	list_for_each_entry(ii, &rst_tcp_repair_sockets, rlist)
+		nf_unlock_connection_show_info(ii);
+}
+
 int check_tcp(void)
 {
 	socklen_t optlen;

@@ -1296,6 +1296,12 @@ void network_unlock(void)
 	}
 }
 
+void show_network_rules(void)
+{
+	cpt_unlock_tcp_connections();
+	list_unlock_tcp_connections();
+}
+
 int veth_pair_add(char *in, char *out)
 {
 	char *aux;
