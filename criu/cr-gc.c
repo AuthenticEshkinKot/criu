@@ -28,6 +28,7 @@ int cr_garbage_collect(bool show)
 		return -1;
 
 	gc_network(show);
+
 	gc_collected_remaps(show);
 
 	return 0;
