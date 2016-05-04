@@ -1301,12 +1301,12 @@ void gc_network(bool show_only)
 	cpt_gc_unlock_tcp_connections();
 	if (show_only)
 	{
-		pr_info("Show network rules\n");
+		pr_info("Network rules:\n");
+		printf("Network rules:\n");
 		list_tcp_connections();
 	}
 	else
 	{
-		pr_info("Delete network rules\n");
 		rst_unlock_tcp_connections();
 	}
 }

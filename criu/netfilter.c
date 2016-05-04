@@ -111,9 +111,9 @@ static int nf_connection_show(int family, u32 *src_addr, u16 src_port,
 		return -1;
 	}
 
-	printf("%s:%d - %s:%d connection\n",
+	pr_info("%s:%d - %s:%d\n",
 			sip, (int)src_port, dip, (int)dst_port);
-	pr_info("MAX: %s:%d - %s:%d connection\n",
+	printf("%s:%d - %s:%d\n",
 			sip, (int)src_port, dip, (int)dst_port);
 	return 0;
 }
