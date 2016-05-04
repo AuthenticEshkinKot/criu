@@ -27,14 +27,7 @@ int cr_garbage_collect(bool show)
 	if (max_prepare_sockets())
 		return -1;
 
-	if (show)
-	{
-		show_network_rules();
-	}
-	else
-	{
-		network_unlock();
-	}
+	network_rules_deletion(show);
 
 	delete_collected_remaps();
 

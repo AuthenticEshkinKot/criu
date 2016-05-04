@@ -1296,10 +1296,19 @@ void network_unlock(void)
 	}
 }
 
-void show_network_rules(void)
+void network_rules_deletion(bool show_only)
 {
-	cpt_unlock_tcp_connections();
-	list_unlock_tcp_connections();
+	cpt_gc_unlock_tcp_connections();
+	if (show_only)
+	{
+		pr_info("Show network rules\n");
+		list_tcp_connections();
+	}
+	else
+	{
+		pr_info("Delete network rules\n");
+		rst_unlock_tcp_connections();
+	}
 }
 
 int veth_pair_add(char *in, char *out)

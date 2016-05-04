@@ -178,12 +178,33 @@ static void tcp_unlock_one(struct inet_sk_desc *sk)
 	close(sk->rfd);
 }
 
+static void tcp_gc_unlock_one(struct inet_sk_desc *sk)
+{
+	int ret;
+
+	list_del(&sk->rlist);
+
+	if (!(root_ns_mask & CLONE_NEWNET)) {
+		ret = nf_unlock_connection(sk);
+		if (ret < 0)
+			pr_perror("Failed to unlock TCP connection");
+	}
+}
+
 void cpt_unlock_tcp_connections(void)
 {
 	struct inet_sk_desc *sk, *n;
 
 	list_for_each_entry_safe(sk, n, &cpt_tcp_repair_sockets, rlist)
 		tcp_unlock_one(sk);
+}
+
+void cpt_gc_unlock_tcp_connections(void)
+{
+	struct inet_sk_desc *sk, *n;
+
+	list_for_each_entry_safe(sk, n, &cpt_tcp_repair_sockets, rlist)
+		tcp_gc_unlock_one(sk);
 }
 
 /*
@@ -725,11 +746,9 @@ void rst_unlock_tcp_connections(void)
 		nf_unlock_connection_info(ii);
 }
 
-void list_unlock_tcp_connections(void)
+void list_tcp_connections(void)
 {
 	struct inet_sk_info *ii;
-
-	pr_info("MAX: Listing network rules\n");
 
 	list_for_each_entry(ii, &rst_tcp_repair_sockets, rlist)
 		nf_unlock_connection_show_info(ii);
