@@ -38,7 +38,9 @@ static int gc_prepare_namespace()
 {  
 	pr_info("MAX: going to prepare_namespace\n");
 
-	if (prepare_pstree(true))
+	task_entries = rst_mem_alloc(sizeof(*task_entries), RM_SHREMAP);
+
+	if (prepare_pstree())
 		return -1;
 
 	if (prepare_mnt_ns())
