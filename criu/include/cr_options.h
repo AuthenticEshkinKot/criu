@@ -107,6 +107,7 @@ struct cr_options {
 	char			*lsm_profile;
 	unsigned int		timeout;
 	unsigned int		empty_ns;
+	bool			gc_show;
 };
 
 extern struct cr_options opts;
