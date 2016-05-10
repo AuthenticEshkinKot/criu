@@ -2269,7 +2269,7 @@ int cr_restore_tasks(void)
 	if (prepare_task_entries() < 0)
 		goto err;
 
-	if (prepare_pstree(false) < 0)
+	if (prepare_pstree() < 0)
 		goto err;
 
 	if (crtools_prepare_shared() < 0)

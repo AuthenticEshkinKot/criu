@@ -219,7 +219,7 @@ struct pstree_item *__alloc_pstree_item(bool rst)
 	return item;
 }
 
-struct pstree_item *alloc_pstree_helper(bool is_for_gc)
+struct pstree_item *alloc_pstree_helper(void)
 {
 	struct pstree_item *ret;
 
@@ -227,7 +227,6 @@ struct pstree_item *alloc_pstree_helper(bool is_for_gc)
 	if (ret) {
 		ret->state = TASK_HELPER;
 		rsti(ret)->clone_flags = CLONE_FILES | CLONE_FS;
-		if (!is_for_gc)
 			task_entries->nr_helpers++;
 	}
 
@@ -404,7 +403,7 @@ static int read_pstree_ids(struct pstree_item *pi)
 	return 0;
 }
 
-static int read_pstree_image(bool is_for_gc)
+static int read_pstree_image(void)
 {
 	int ret = 0, i;
 	struct cr_img *img;
@@ -488,11 +487,8 @@ static int read_pstree_image(bool is_for_gc)
 			max_pid = max((int)e->threads[i], max_pid);
 		}
 
-		if (!is_for_gc)
-		{
-			task_entries->nr_threads += e->n_threads;
-			task_entries->nr_tasks++;
-		}
+		task_entries->nr_threads += e->n_threads;
+		task_entries->nr_tasks++;
 
 		pstree_entry__free_unpacked(e, NULL);
 
@@ -505,7 +501,7 @@ err:
 	return ret;
 }
 
-static int prepare_pstree_ids(bool is_for_gc)
+static int prepare_pstree_ids(void)
 {
 	struct pstree_item *item, *child, *helper, *tmp;
 	LIST_HEAD(helpers);
@@ -528,7 +524,7 @@ static int prepare_pstree_ids(bool is_for_gc)
 		if (item->sid == root_item->sid || item->sid == item->pid.virt)
 			continue;
 
-		helper = alloc_pstree_helper(is_for_gc);
+		helper = alloc_pstree_helper();
 		if (helper == NULL)
 			return -1;
 		helper->sid = item->sid;
@@ -647,7 +643,7 @@ static int prepare_pstree_ids(bool is_for_gc)
 		if (current_pgid == item->pgid)
 			continue;
 
-		helper = alloc_pstree_helper(is_for_gc);
+		helper = alloc_pstree_helper();
 		if (helper == NULL)
 			return -1;
 		helper->sid = item->sid;
@@ -782,11 +778,11 @@ static int prepare_pstree_kobj_ids(void)
 	return 0;
 }
 
-int prepare_pstree(bool is_for_gc)
+int prepare_pstree(void)
 {
 	int ret;
 
-	ret = read_pstree_image(is_for_gc);
+	ret = read_pstree_image();
 	if (!ret)
 		/*
 		 * Shell job may inherit sid/pgid from the current
@@ -804,7 +800,7 @@ int prepare_pstree(bool is_for_gc)
 		 * Session/Group leaders might be dead. Need to fix
 		 * pstree with properly injected helper tasks.
 		 */
-		ret = prepare_pstree_ids(is_for_gc);
+		ret = prepare_pstree_ids();
 
 	return ret;
 }

@@ -250,6 +250,7 @@ int main(int argc, char *argv[], char *envp[])
 		{ "extra",			no_argument,		0, 1077	},
 		{ "experimental",		no_argument,		0, 1078	},
 		{ "all",			no_argument,		0, 1079	},
+		{ "show",			no_argument,		0, 1080	},
 		{ },
 	};
 
@@ -541,6 +542,9 @@ int main(int argc, char *argv[], char *envp[])
 			opts.check_extra_features = true;
 			opts.check_experimental_features = true;
 			break;
+		case 1080:
+			opts.gc_show = true;
+			break;
 		case 'V':
 			pr_msg("Version: %s\n", CRIU_VERSION);
 			if (strcmp(CRIU_GITID, "0"))
@@ -697,7 +701,7 @@ int main(int argc, char *argv[], char *envp[])
 	}
 
 	if (!strcmp(argv[optind], "gc")) {
-		return cr_garbage_collect();
+		return cr_garbage_collect(opts.gc_show);
 	}
 
 	pr_msg("Error: unknown command: %s\n", argv[optind]);
