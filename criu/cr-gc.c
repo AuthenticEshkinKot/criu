@@ -54,10 +54,5 @@ static int gc_prepare_sockets()
 	if (collect_inet_sockets())
 		return -1;
 
-	rst_mem_switch_to_private();
-
-	if (rst_tcp_socks_prep())
-		return -1;
-
 	return 0;
 }
