@@ -368,7 +368,7 @@ static int open_remap_dead_process(struct reg_file_info *rfi,
 		}
 	}
 
-	helper = alloc_pstree_helper(false);
+	helper = alloc_pstree_helper();
 	if (!helper)
 		return -1;
 
