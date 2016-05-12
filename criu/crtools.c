@@ -250,6 +250,7 @@ int main(int argc, char *argv[], char *envp[])
 		{ "extra",			no_argument,		0, 1077	},
 		{ "experimental",		no_argument,		0, 1078	},
 		{ "all",			no_argument,		0, 1079	},
+		{ "show",			no_argument,		0, 1080	},
 		{ },
 	};
 
@@ -541,6 +542,9 @@ int main(int argc, char *argv[], char *envp[])
 			opts.check_extra_features = true;
 			opts.check_experimental_features = true;
 			break;
+		case 1080:
+			opts.gc_show = true;
+			break;
 		case 'V':
 			pr_msg("Version: %s\n", CRIU_VERSION);
 			if (strcmp(CRIU_GITID, "0"))
@@ -696,6 +700,10 @@ int main(int argc, char *argv[], char *envp[])
 			return cpuinfo_check();
 	}
 
+	if (!strcmp(argv[optind], "gc")) {
+		return cr_garbage_collect(opts.gc_show);
+	}
+
 	pr_msg("Error: unknown command: %s\n", argv[optind]);
 usage:
 	pr_msg("\n"
@@ -719,6 +727,7 @@ usage:
 "  dedup          remove duplicates in memory dump\n"
 "  cpuinfo dump   writes cpu information into image file\n"
 "  cpuinfo check  validates cpu information read from image file\n"
+"  gc             removes what was left in the system after dump\n"
 	);
 
 	if (usage_error) {
@@ -832,6 +841,8 @@ usage:
 "  --port PORT           port of page server\n"
 "  -d|--daemon           run in the background after creating socket\n"
 "\n"
+"Garbage collection options:\n"
+"  --show                show what will be deleted without actual deletion\n"
 "Other options:\n"
 "  -h|--help             show this text\n"
 "  -V|--version          show version\n"
