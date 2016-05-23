@@ -18,7 +18,8 @@ int cr_garbage_collect(bool show)
 	if (collect_remaps_and_regfiles())
 		return -1;
 
-	task_entries = rst_mem_alloc(sizeof(*task_entries), RM_SHREMAP);
+	if (prepare_task_entries() < 0)
+		return -1;
 
 	if (prepare_pstree())
 		return -1;

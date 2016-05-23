@@ -155,7 +155,7 @@ err1:
 	return -1;
 }
 
-static void tcp_unlock_one(struct inet_sk_desc *sk)
+static void tcp_unlock_one(struct inet_sk_desc *sk, bool is_gc)
 {
 	int ret;
 
@@ -166,6 +166,9 @@ static void tcp_unlock_one(struct inet_sk_desc *sk)
 		if (ret < 0)
 			pr_perror("Failed to unlock TCP connection");
 	}
+
+	if (is_gc)
+		return;
 
 	tcp_repair_off(sk->rfd);
 
@@ -178,33 +181,12 @@ static void tcp_unlock_one(struct inet_sk_desc *sk)
 	close(sk->rfd);
 }
 
-static void tcp_gc_unlock_one(struct inet_sk_desc *sk)
-{
-	int ret;
-
-	list_del(&sk->rlist);
-
-	if (!(root_ns_mask & CLONE_NEWNET)) {
-		ret = nf_unlock_connection(sk);
-		if (ret < 0)
-			pr_perror("Failed to unlock TCP connection");
-	}
-}
-
-void cpt_unlock_tcp_connections(void)
+void cpt_unlock_tcp_connections(bool is_gc)
 {
 	struct inet_sk_desc *sk, *n;
 
 	list_for_each_entry_safe(sk, n, &cpt_tcp_repair_sockets, rlist)
-		tcp_unlock_one(sk);
-}
-
-void cpt_gc_unlock_tcp_connections(void)
-{
-	struct inet_sk_desc *sk, *n;
-
-	list_for_each_entry_safe(sk, n, &cpt_tcp_repair_sockets, rlist)
-		tcp_gc_unlock_one(sk);
+		tcp_unlock_one(sk, is_gc);
 }
 
 /*

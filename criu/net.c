@@ -1287,7 +1287,7 @@ void network_unlock(void)
 {
 	pr_info("Unlock network\n");
 
-	cpt_unlock_tcp_connections();
+	cpt_unlock_tcp_connections(false);
 	rst_unlock_tcp_connections();
 
 	if (root_ns_mask & CLONE_NEWNET) {
@@ -1298,11 +1298,10 @@ void network_unlock(void)
 
 void gc_network(bool show_only)
 {
-	cpt_gc_unlock_tcp_connections();
+	cpt_unlock_tcp_connections(true);
 	if (show_only)
 	{
-		pr_info("Network rules:\n");
-		printf("Network rules:\n");
+		pr_msg("Network rules:\n");
 		list_tcp_connections();
 	}
 	else

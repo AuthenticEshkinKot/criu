@@ -463,7 +463,7 @@ static int delete_one_remap(struct remap_info *ri)
 		int mntns_root = mntns_get_root_by_mnt_id(rfi->remap->rmnt_id);
 		if (!unlinkat(mntns_root, rfi->remap->rpath, rfi->remap->is_dir ? AT_REMOVEDIR : 0))
 		{
-			pr_info("deleted remap - %s\n", rfi->remap->rpath);
+			pr_msg("deleted remap - %s\n", rfi->remap->rpath);
 		}
 		else
 		{
@@ -487,8 +487,7 @@ static int show_one_remap(struct remap_info *ri)
 			return -1;
 		}
 
-		pr_info("%s\n", rfi->remap->rpath);
-		printf("%s\n", rfi->remap->rpath);
+		pr_msg("%s\n", rfi->remap->rpath);
 	}
 
 	return 0;
@@ -539,8 +538,7 @@ void gc_collected_remaps(bool show_only)
 
 	if (show_only)
 	{
-		pr_info("Link remaps:\n");
-		printf("Link remaps:\n");
+		pr_msg("Link remaps:\n");
 		list_for_each_entry(ri, &remaps, list) {
 			show_one_remap(ri);
 		}

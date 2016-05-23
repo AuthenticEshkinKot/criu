@@ -66,8 +66,7 @@ static inline void tcp_repair_off(int fd)
 
 extern void tcp_locked_conn_add(struct inet_sk_info *);
 extern void rst_unlock_tcp_connections(void);
-extern void cpt_unlock_tcp_connections(void);
-extern void cpt_gc_unlock_tcp_connections(void);
+extern void cpt_unlock_tcp_connections(bool is_gc);
 extern void list_tcp_connections(void);
 
 extern int dump_one_tcp(int sk, struct inet_sk_desc *sd);

@@ -111,9 +111,7 @@ static int nf_connection_show(int family, u32 *src_addr, u16 src_port,
 		return -1;
 	}
 
-	pr_info("%s:%d - %s:%d\n",
-			sip, (int)src_port, dip, (int)dst_port);
-	printf("%s:%d - %s:%d\n",
+	pr_msg("%s:%d - %s:%d\n",
 			sip, (int)src_port, dip, (int)dst_port);
 	return 0;
 }
@@ -173,9 +171,6 @@ int nf_unlock_connection_show_info(struct inet_sk_info *si)
 	ret |= nf_connection_show(si->ie->family,
 			si->ie->src_addr, si->ie->src_port,
 			si->ie->dst_addr, si->ie->dst_port);
-	ret |= nf_connection_show(si->ie->family,
-			si->ie->dst_addr, si->ie->dst_port,
-			si->ie->src_addr, si->ie->src_port);
 
 	return ret;
 }
