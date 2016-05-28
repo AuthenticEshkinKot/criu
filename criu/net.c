@@ -1287,12 +1287,31 @@ void network_unlock(void)
 {
 	pr_info("Unlock network\n");
 
-	cpt_unlock_tcp_connections();
+	cpt_unlock_tcp_connections(false);
 	rst_unlock_tcp_connections();
 
 	if (root_ns_mask & CLONE_NEWNET) {
 		run_scripts(ACT_NET_UNLOCK);
 		network_unlock_internal();
+	}
+}
+
+void gc_network(bool show_only)
+{
+	cpt_unlock_tcp_connections(true);
+	if (show_only)
+	{
+		pr_msg("Network rules:\n");
+		list_tcp_connections();
+	}
+	else
+	{
+		rst_unlock_tcp_connections();
+
+		if (root_ns_mask & CLONE_NEWNET) {
+			run_scripts(ACT_NET_UNLOCK);
+			network_unlock_internal();
+		}
 	}
 }
 
